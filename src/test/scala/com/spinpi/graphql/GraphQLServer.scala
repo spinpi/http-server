@@ -1,6 +1,8 @@
 package com.spinpi.graphql
 
 import akka.actor.ActorSystem
+import akka.http.scaladsl.model.headers.OAuth2BearerToken
+import akka.http.scaladsl.server.Directive1
 import com.google.inject.{Inject, Provides, Singleton}
 import com.spinpi.graphql.schema.{GraphQLMutations, GraphQLQueries}
 import com.spinpi.http.HttpServer
@@ -45,21 +47,39 @@ case class GraphQLContext() {
 
 }
 
-class GraphQLRoute @Inject()(
+class GraphQLRouteAbstractRoute @Inject()(
     context: GraphQLContext,
     schema: Schema[GraphQLContext, Unit],
     implicit val actorSystem: ActorSystem,
     val executionContext: ExecutionContext
-) extends GraphQLAbstractRoute {
+) extends GraphQLWithExtractorAbstractRoute[OAuth2BearerToken] {
+  import akka.http.scaladsl.server.Directives._
 
   implicit val dispatcher = actorSystem.dispatcher
+
+  override def requestExtractor: Directive1[Option[OAuth2BearerToken]] = {
+
+    def extractAccessTokenParameterAsBearerToken = {
+      parameter('access_token.?).map(_.map(OAuth2BearerToken))
+    }
+
+    val extractCreds: Directive1[Option[OAuth2BearerToken]] =
+      extractCredentials.flatMap {
+        case Some(c: OAuth2BearerToken) ⇒ provide(Some(c))
+        case _                          ⇒ extractAccessTokenParameterAsBearerToken
+      }
+
+    extractCreds
+  }
 
   override def executeGraphQL(
       query: Document,
       operationName: Option[String],
       variables: Json,
-      tracing: Boolean
+      tracing: Boolean,
+      data: Option[OAuth2BearerToken]
   ): Future[Json] = {
+    println(data)
     Executor
       .execute(
         schema,
@@ -142,7 +162,7 @@ object GraphQLServer extends App with HttpServer {
 
   router
     .addPreFilter[AccessLoggingFilter]
-    .add[GraphQLRoute]
+    .add[GraphQLRouteAbstractRoute]
 
   startHttpServer()
 }

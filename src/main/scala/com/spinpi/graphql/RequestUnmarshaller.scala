@@ -29,15 +29,6 @@ object RequestUnmarshaller {
   def mediaTypes: Seq[MediaType.WithFixedCharset] =
     List(`application/graphql`)
 
-  def explicitlyAccepts(mediaType: MediaType): Directive0 =
-    headerValuePF {
-      case Accept(ranges)
-          if ranges.exists(
-            range ⇒ !range.isWildcard && range.matches(mediaType)
-          ) ⇒
-        ranges
-    }.flatMap(_ ⇒ pass)
-
   def unmarshallerContentTypes: Seq[ContentTypeRange] =
     mediaTypes.map(ContentTypeRange.apply)
 
