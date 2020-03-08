@@ -6,7 +6,7 @@ import com.github.mustachejava.MustacheFactory
 import com.google.inject.{Inject, Singleton}
 
 @Singleton
-class MustacheService @Inject()(
+class MustacheService @Inject() (
     mustacheFactory: MustacheFactory
 ) {
 

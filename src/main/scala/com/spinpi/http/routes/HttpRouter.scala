@@ -17,7 +17,7 @@ import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.collection.mutable.ArrayBuffer
 
-class HttpRouter @Inject()(
+class HttpRouter @Inject() (
     injector: Injector,
     @Named("rootConfig") config: Config
 ) extends LazyLogging {
@@ -33,12 +33,10 @@ class HttpRouter @Inject()(
   ): server.Route = {
     val rootRoute = concat(routes.map(_.route): _*)
     val allPreFilters = preFilters.foldLeft(Directive.Empty) {
-      (directive, filter) =>
-        directive & filter.directive
+      (directive, filter) => directive & filter.directive
     }
     val allFilters = filters.foldLeft(Directive.Empty) {
-      (finalDirective, filter) =>
-        finalDirective & filter.directive
+      (finalDirective, filter) => finalDirective & filter.directive
     }
 
     val exceptionHandler = exceptionMappers.toList match {

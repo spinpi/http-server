@@ -14,7 +14,7 @@ import java.util
 
 import javax.inject.Inject
 
-class ScalaObjectHandler @Inject()(
+class ScalaObjectHandler @Inject() (
     settings: MustacheTemplateSettings
 ) extends ReflectionObjectHandler {
 

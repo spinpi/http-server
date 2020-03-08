@@ -10,7 +10,7 @@ import com.spinpi.conversions.boolean._
 import com.spinpi.http.marshallers.html.MustacheTemplateSettings
 
 @Singleton
-class FileResolver @Inject()(
+class FileResolver @Inject() (
     mustacheTemplateSettings: MustacheTemplateSettings
 ) extends LazyLogging {
 
