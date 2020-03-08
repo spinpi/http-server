@@ -1,7 +1,6 @@
 package com.spinpi.graphql
 
 import akka.http.scaladsl.server.Directive1
-import akka.http.scaladsl.server.Directives.provide
 import io.circe.Json
 import sangria.ast.Document
 

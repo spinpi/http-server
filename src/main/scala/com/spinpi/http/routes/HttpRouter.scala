@@ -12,6 +12,7 @@ import com.spinpi.http.directives.{
 }
 import com.google.inject.{Inject, Injector}
 import com.typesafe.config.Config
+import com.typesafe.scalalogging.LazyLogging
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.collection.mutable.ArrayBuffer
@@ -19,7 +20,7 @@ import scala.collection.mutable.ArrayBuffer
 class HttpRouter @Inject()(
     injector: Injector,
     @Named("rootConfig") config: Config
-) {
+) extends LazyLogging {
 
   private[http] val routes            = ArrayBuffer[HttpRoute]()
   private[http] val filters           = ArrayBuffer[HttpFilter]()
@@ -83,7 +84,8 @@ class HttpRouter @Inject()(
     this
   }
 
-  private def addRoute[R <: HttpRoute](route: R): HttpRouter = {
+  def addRoute[R <: HttpRoute](route: R): HttpRouter = {
+    logger.info(s"Adding route: ${route.getClass.getName}")
     routes += route
     this
   }

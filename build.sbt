@@ -14,21 +14,23 @@ crossScalaVersions := supportedScalaVersions
 scalacOptions ++= Seq("-deprecation", "-feature")
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka"          %% "akka-actor"      % "2.5.12",
-  "com.typesafe.akka"          %% "akka-stream"     % "2.5.12",
-  "com.typesafe.akka"          %% "akka-http"       % "10.1.11",
-  "com.typesafe.scala-logging" %% "scala-logging"   % "3.9.2",
-  "net.codingwell"             %% "scala-guice"     % "4.2.6",
-  "com.typesafe"               % "config"           % "1.3.2",
-  "org.sangria-graphql"        %% "sangria"         % "1.4.2",
-  "org.sangria-graphql"        %% "sangria-slowlog" % "0.1.8",
-  "org.sangria-graphql"        %% "sangria-circe"   % "1.3.0",
-  "de.heikoseeberger"          %% "akka-http-circe" % "1.30.0",
-  "io.circe"                   %% "circe-core"      % "0.12.3",
-  "io.circe"                   %% "circe-parser"    % "0.12.3",
-  "io.circe"                   %% "circe-optics"    % "0.12.0",
-  "org.scalatest"              %% "scalatest"       % "3.0.5" % Test,
-  "ch.qos.logback"             % "logback-classic"  % "1.2.3" % Test
+  "com.typesafe.akka"                 %% "akka-actor"          % "2.5.12",
+  "com.typesafe.akka"                 %% "akka-stream"         % "2.5.12",
+  "com.typesafe.akka"                 %% "akka-http"           % "10.1.11",
+  "com.typesafe.scala-logging"        %% "scala-logging"       % "3.9.2",
+  "net.codingwell"                    %% "scala-guice"         % "4.2.6",
+  "com.typesafe"                      % "config"               % "1.3.2",
+  "org.sangria-graphql"               %% "sangria"             % "1.4.2",
+  "org.sangria-graphql"               %% "sangria-slowlog"     % "0.1.8",
+  "org.sangria-graphql"               %% "sangria-circe"       % "1.3.0",
+  "de.heikoseeberger"                 %% "akka-http-circe"     % "1.30.0",
+  "io.circe"                          %% "circe-core"          % "0.12.3",
+  "io.circe"                          %% "circe-parser"        % "0.12.3",
+  "io.circe"                          %% "circe-optics"        % "0.12.0",
+  "com.github.spullara.mustache.java" % "compiler"             % "0.9.6",
+  "commons-io"                        % "commons-io"           % "2.6",
+  "org.scalatest"                     %% "scalatest"           % "3.0.5" % Test,
+  "ch.qos.logback"                    % "logback-classic"      % "1.2.3" % Test
 )
 
 scmInfo := Some(
@@ -40,10 +42,10 @@ scmInfo := Some(
 
 developers := List(
   Developer(
-    id = "thanhtien522",
+    id = "neitomic",
     name = "Tien Nguyen",
-    email = "thanhtien522@gmail.com",
-    url = url("https://thanhtien522.github.io/")
+    email = "neitomic@gmail.com",
+    url = url("https://neitomic.github.io/")
   )
 )
 
@@ -66,3 +68,4 @@ pomIncludeRepository in ThisBuild := { _ =>
 }
 
 scalafmtOnCompile := true
+isSnapshot := true

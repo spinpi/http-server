@@ -53,7 +53,6 @@ class GraphQLRouteAbstractRoute @Inject()(
     implicit val actorSystem: ActorSystem,
     val executionContext: ExecutionContext
 ) extends GraphQLWithExtractorAbstractRoute[OAuth2BearerToken] {
-  import akka.http.scaladsl.server.Directives._
 
   implicit val dispatcher = actorSystem.dispatcher
 
