@@ -10,7 +10,7 @@ import akka.http.scaladsl.server.{
 import com.google.inject.Inject
 import com.spinpi.http.routes.HttpRoute
 import com.spinpi.http.directives.{AccessLoggingFilter, ExceptionMapper}
-import com.spinpi.http.marshallers.html.{MustacheHtmlSupport, MustacheService}
+import com.spinpi.http.marshallers.html.{MustacheSupport, MustacheService}
 import com.spinpi.http.modules.MustacheModule
 import com.spinpi.http.response.MustacheResponse
 
@@ -47,7 +47,7 @@ class TestExceptioMapper extends ExceptionMapper with Directives {
 
 case class TestMustacheRoute @Inject()(mustacheService: MustacheService)
     extends HttpRoute
-    with MustacheHtmlSupport {
+    with MustacheSupport {
 
   override def route: Route = {
     path("helloworld") {
