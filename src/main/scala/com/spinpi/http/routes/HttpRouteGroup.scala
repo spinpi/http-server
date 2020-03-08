@@ -1,6 +1,5 @@
 package com.spinpi.http.routes
 
-import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 
 trait HttpRouteGroup extends HttpRoute {

@@ -2,10 +2,17 @@ package com.spinpi.http
 
 import akka.http.scaladsl.model.headers.HttpChallenge
 import akka.http.scaladsl.server.AuthenticationFailedRejection.CredentialsRejected
-import akka.http.scaladsl.server.{AuthenticationFailedRejection, Route}
+import akka.http.scaladsl.server.{
+  AuthenticationFailedRejection,
+  Directives,
+  Route
+}
+import com.google.inject.Inject
 import com.spinpi.http.routes.HttpRoute
-import akka.http.scaladsl.server.Directives._
 import com.spinpi.http.directives.{AccessLoggingFilter, ExceptionMapper}
+import com.spinpi.http.marshallers.html.{MustacheSupport, MustacheService}
+import com.spinpi.http.modules.MustacheModule
+import com.spinpi.http.response.MustacheResponse
 
 import scala.concurrent.Future
 
@@ -30,7 +37,7 @@ class ExceptionRoute extends HttpRoute {
   }
 }
 
-class TestExceptioMapper extends ExceptionMapper {
+class TestExceptioMapper extends ExceptionMapper with Directives {
   import akka.http.scaladsl.model.StatusCodes._
   override def handler: PartialFunction[Throwable, Route] = {
     case e: Exception =>
@@ -38,7 +45,25 @@ class TestExceptioMapper extends ExceptionMapper {
   }
 }
 
+case class TestMustacheRoute @Inject()(mustacheService: MustacheService)
+    extends HttpRoute
+    with MustacheSupport {
+
+  override def route: Route = {
+    path("helloworld") {
+      complete(
+        MustacheResponse(
+          Map("title" -> "Helloworld", "desc" -> "Hello", "keywords" -> "123"),
+          "helloworld.mustache"
+        )
+      )
+    }
+  }
+}
+
 object TestServer extends HttpServer with App {
+
+  registerModules(MustacheModule)
 
   router
     .addPreFilter[AccessLoggingFilter]
@@ -46,6 +71,7 @@ object TestServer extends HttpServer with App {
     .add[PingRoute]
     .add[RejectedRoute]
     .add[ExceptionRoute]
+    .add[TestMustacheRoute]
 
   startHttpServer()
 

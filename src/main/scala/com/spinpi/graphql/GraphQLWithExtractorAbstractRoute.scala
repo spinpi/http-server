@@ -73,8 +73,9 @@ trait GraphQLWithExtractorAbstractRoute[ExtractedData]
           requestExtractor { data =>
             entity(as[Json]) { body ⇒
               val query = queryParam orElse root.query.string.getOption(body)
-              val operationName = operationNameParam orElse root.operationName.string
-                .getOption(body)
+              val operationName =
+                operationNameParam orElse root.operationName.string
+                  .getOption(body)
               val variablesStr = variablesParam orElse root.variables.string
                 .getOption(body)
 

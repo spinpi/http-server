@@ -54,8 +54,8 @@ trait GraphQLDirectives {
   def explicitlyAccepts(mediaType: MediaType): Directive0 =
     headerValuePF {
       case Accept(ranges)
-          if ranges.exists(
-            range => !range.isWildcard && range.matches(mediaType)
+          if ranges.exists(range =>
+            !range.isWildcard && range.matches(mediaType)
           ) =>
         ranges
     }.flatMap(_ => pass)
