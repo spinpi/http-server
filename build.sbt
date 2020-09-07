@@ -1,11 +1,13 @@
 import Versions._
+import xerial.sbt.Sonatype._
+
+publishArtifact := false
 
 lazy val commonSettings = Seq(
   organization := "com.spinpi",
   organizationName := "SpinPI",
   organizationHomepage := Some(url("https://spinpi.com")),
   description := "A HTTP server based on Akka HTTP",
-  homepage := Some(url("https://github.com/spinpi/http-server")),
   scalaVersion := scala213,
   crossScalaVersions := supportedScalaVersions,
   javacOptions ++= Seq("-encoding", "utf-8"),
@@ -15,14 +17,18 @@ lazy val commonSettings = Seq(
 )
 
 lazy val publishSettings = Seq(
+  publishTo := sonatypePublishToBundle.value,
+  sonatypeProfileName := "com.spinpi",
   publishMavenStyle := true,
-  pomIncludeRepository := { _ => false },
-  publishTo := {
-    val nexus = "https://oss.sonatype.org/"
-    if (isSnapshot.value)
-      Some("snapshots" at nexus + "content/repositories/snapshots")
-    else Some("releases" at nexus + "service/local/staging/deploy/maven2")
-  },
+  licenses := Seq(
+    "MIT License" -> url(
+      "http://www.opensource.org/licenses/mit-license.html"
+    )
+  ),
+  sonatypeProjectHosting := Some(
+    GitHubHosting("spinpi", "http-server", "neitomic@gmail.com")
+  ),
+  homepage := Some(url("https://github.com/spinpi/http-server")),
   scmInfo := Some(
     ScmInfo(
       url("https://github.com/spinpi/http-server"),
@@ -36,23 +42,21 @@ lazy val publishSettings = Seq(
       email = "neitomic@gmail.com",
       url = url("https://neitomic.github.io/")
     )
-  ),
-  licenses := Seq(
-    "MIT License" -> url(
-      "http://www.opensource.org/licenses/mit-license.html"
-    )
   )
 )
 
 val core = project
   .in(file("core"))
-  .settings(commonSettings)
+  .settings(commonSettings ++ publishSettings)
 
-val graphql = project.in(file("graphql"))
-  .settings(commonSettings)
+val graphql = project
+  .in(file("graphql"))
+  .settings(commonSettings ++ publishSettings)
   .dependsOn(core)
 
 val template = project
   .in(file("template"))
-  .settings(commonSettings)
+  .settings(commonSettings ++ publishSettings)
   .dependsOn(core)
+
+publishSettings
