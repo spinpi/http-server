@@ -28,6 +28,6 @@ trait HttpServer extends InjectApp with LazyLogging {
 
     val route = router.getHttpHandler(Option(overrideRejectionHandler))
     logger.info(s"Starting sever at $interface:$httpPort...")
-    Http().bindAndHandle(route, interface, httpPort)
+    Http().newServerAt(interface, httpPort).bindFlow(route)
   }
 }
