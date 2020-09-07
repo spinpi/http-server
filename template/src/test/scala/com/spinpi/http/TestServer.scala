@@ -2,11 +2,7 @@ package com.spinpi.http
 
 import akka.http.scaladsl.model.headers.HttpChallenge
 import akka.http.scaladsl.server.AuthenticationFailedRejection.CredentialsRejected
-import akka.http.scaladsl.server.{
-  AuthenticationFailedRejection,
-  Directives,
-  Route
-}
+import akka.http.scaladsl.server.{AuthenticationFailedRejection, Directives, Route}
 import com.google.inject.Inject
 import com.spinpi.http.directives.{AccessLoggingFilter, ExceptionMapper}
 import com.spinpi.http.routes.HttpRoute
@@ -37,7 +33,7 @@ class ExceptionRoute extends HttpRoute {
   }
 }
 
-class TestExceptioMapper extends ExceptionMapper with Directives {
+class TestExceptionMapper extends ExceptionMapper with Directives {
   import akka.http.scaladsl.model.StatusCodes._
   override def handler: PartialFunction[Throwable, Route] = {
     case e: Exception =>
@@ -67,7 +63,7 @@ object TestServerWithTemplate extends HttpServer with App {
 
   router
     .addPreFilter[AccessLoggingFilter]
-    .addExceptionMapper[TestExceptioMapper]
+    .addExceptionMapper[TestExceptionMapper]
     .add[PingRoute]
     .add[RejectedRoute]
     .add[ExceptionRoute]

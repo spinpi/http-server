@@ -7,7 +7,6 @@ import akka.http.scaladsl.server.{
   Directives,
   Route
 }
-import com.google.inject.Inject
 import com.spinpi.http.directives.{AccessLoggingFilter, ExceptionMapper}
 import com.spinpi.http.routes.HttpRoute
 
@@ -34,7 +33,7 @@ class ExceptionRoute extends HttpRoute {
   }
 }
 
-class TestExceptioMapper extends ExceptionMapper with Directives {
+class TestExceptionMapper extends ExceptionMapper with Directives {
   import akka.http.scaladsl.model.StatusCodes._
   override def handler: PartialFunction[Throwable, Route] = {
     case e: Exception =>
@@ -42,33 +41,14 @@ class TestExceptioMapper extends ExceptionMapper with Directives {
   }
 }
 
-//case class TestMustacheRoute @Inject()(mustacheService: MustacheService)
-//    extends HttpRoute
-//    with MustacheSupport {
-//
-//  override def route: Route = {
-//    path("helloworld") {
-//      complete(
-//        MustacheResponse(
-//          Map("title" -> "Helloworld", "desc" -> "Hello", "keywords" -> "123"),
-//          "helloworld.mustache"
-//        )
-//      )
-//    }
-//  }
-//}
-
 object TestServer extends HttpServer with App {
-
-//  registerModules(MustacheModule)
 
   router
     .addPreFilter[AccessLoggingFilter]
-    .addExceptionMapper[TestExceptioMapper]
+    .addExceptionMapper[TestExceptionMapper]
     .add[PingRoute]
     .add[RejectedRoute]
     .add[ExceptionRoute]
-//    .add[TestMustacheRoute]
 
   startHttpServer()
 
