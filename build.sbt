@@ -59,7 +59,6 @@ val template = project
   .settings(commonSettings ++ publishSettings)
   .dependsOn(core)
 
-publishSettings
 
 import ReleaseTransformations._
 
