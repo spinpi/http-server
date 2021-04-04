@@ -1,6 +1,7 @@
 # Http server
 
 [![Build Status](https://travis-ci.org/spinpi/http-server.svg?branch=master)](https://travis-ci.org/spinpi/http-server)
+[![codecov](https://codecov.io/gh/spinpi/http-server/branch/master/graph/badge.svg?token=O2TP9YQLJM)](https://codecov.io/gh/spinpi/http-server)
 
 Akka HTTP server with plug-and-play components.
 
