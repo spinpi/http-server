@@ -59,8 +59,7 @@ val template = project
   .settings(commonSettings ++ publishSettings)
   .dependsOn(core)
 
-
-import ReleaseTransformations._
+import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
 releaseCrossBuild := true
 releaseProcess := Seq[ReleaseStep](
