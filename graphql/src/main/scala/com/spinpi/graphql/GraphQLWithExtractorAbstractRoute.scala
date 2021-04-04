@@ -79,11 +79,11 @@ trait GraphQLWithExtractorAbstractRoute[ExtractedData]
       ) { (queryParam, operationNameParam, variablesParam) ⇒
         requestExtractor { data =>
           entity(as[Json]) { body ⇒
-            val query = queryParam orElse root.query.string.getOption(body)
+            val query         = queryParam orElse root.query.string.getOption(body)
             val operationName =
               operationNameParam orElse root.operationName.string
                 .getOption(body)
-            val variablesStr = variablesParam orElse root.variables.string
+            val variablesStr  = variablesParam orElse root.variables.string
               .getOption(body)
 
             parserDirective(query, variablesStr) { (ast, json) =>
@@ -107,7 +107,7 @@ trait GraphQLWithExtractorAbstractRoute[ExtractedData]
     }
   }
 
-  val playGroundRoute: Route = get {
+  lazy val playGroundRoute: Route = get {
     explicitlyAccepts(`text/html`) {
       if (isDisablePlayground) {
         reject(UnsupportedRequestContentTypeRejection(Set.empty, None))

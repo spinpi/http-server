@@ -2,7 +2,11 @@ package com.spinpi.http
 
 import akka.http.scaladsl.model.headers.HttpChallenge
 import akka.http.scaladsl.server.AuthenticationFailedRejection.CredentialsRejected
-import akka.http.scaladsl.server.{AuthenticationFailedRejection, Directives, Route}
+import akka.http.scaladsl.server.{
+  AuthenticationFailedRejection,
+  Directives,
+  Route
+}
 import com.google.inject.Inject
 import com.spinpi.http.directives.{AccessLoggingFilter, ExceptionMapper}
 import com.spinpi.http.routes.HttpRoute

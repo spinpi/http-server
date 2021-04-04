@@ -1,26 +1,19 @@
-package com.spinpi.graphql
+package com.spinpi.graphql.examples
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.headers.OAuth2BearerToken
-import akka.http.scaladsl.server.Directive1
 import com.google.inject.{Inject, Provides, Singleton}
 import com.spinpi.graphql.schema.{GraphQLMutations, GraphQLQueries}
+import com.spinpi.graphql.{GraphQLAbstractModule, GraphQLAbstractRoute}
 import com.spinpi.http.HttpServer
 import com.spinpi.http.directives.AccessLoggingFilter
-import io.circe.Json
-import sangria.ast.Document
-import sangria.execution.Executor
-import sangria.marshalling.circe._
 import sangria.schema.{Schema, _}
-import sangria.slowlog.SlowLog
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 case class Character(id: String, name: Option[String], friends: Seq[String])
 
 case class GraphQLContext() {
-
-  val characters = List[Character](
+  val characters: List[Character] = List[Character](
     Character(
       id = "1000",
       name = Some("Luke Skywalker"),
@@ -43,51 +36,14 @@ case class GraphQLContext() {
       friends = List("1001")
     )
   )
-
 }
 
-class GraphQLRouteAbstractRoute @Inject() (
-    context: GraphQLContext,
-    schema: Schema[GraphQLContext, Unit],
+class GraphQLRoute @Inject() (
+    val context: GraphQLContext,
+    val schema: Schema[GraphQLContext, Unit],
     implicit val actorSystem: ActorSystem,
-    val executionContext: ExecutionContext
-) extends GraphQLWithExtractorAbstractRoute[OAuth2BearerToken] {
-
-  implicit val dispatcher = actorSystem.dispatcher
-
-  override def requestExtractor: Directive1[Option[OAuth2BearerToken]] = {
-
-    def extractAccessTokenParameterAsBearerToken = {
-      parameters("access_token".optional).map(_.map(OAuth2BearerToken))
-    }
-
-    val extractCreds: Directive1[Option[OAuth2BearerToken]] =
-      extractCredentials.flatMap {
-        case Some(c: OAuth2BearerToken) ⇒ provide(Some(c))
-        case _                          ⇒ extractAccessTokenParameterAsBearerToken
-      }
-
-    extractCreds
-  }
-
-  override def executeGraphQL(
-      query: Document,
-      operationName: Option[String],
-      variables: Json,
-      tracing: Boolean,
-      data: Option[OAuth2BearerToken]
-  ): Future[Json] = {
-    Executor
-      .execute(
-        schema,
-        query,
-        context,
-        variables = variables,
-        operationName = operationName,
-        middleware = if (tracing) SlowLog.apolloTracing :: Nil else Nil
-      )
-  }
-
+    implicit val executionContext: ExecutionContext
+) extends GraphQLAbstractRoute[GraphQLContext] {
   override val prefix: String = "graphql"
 }
 
@@ -125,21 +81,22 @@ object CharacterSchema {
         )
     )
 
-  val schemaFields = fields[GraphQLContext, Unit](
-    Field(
-      "characters",
-      ListType(Character),
-      arguments = Nil,
-      resolve = c ⇒ c.ctx.characters
+  val schemaFields: List[Field[GraphQLContext, Unit]] =
+    fields[GraphQLContext, Unit](
+      Field(
+        "characters",
+        ListType(Character),
+        arguments = Nil,
+        resolve = c ⇒ c.ctx.characters
+      )
     )
-  )
 
 }
 
 object GraphQLModule extends GraphQLAbstractModule {
   @Provides
   @Singleton
-  def providesSchema = {
+  def providesSchema: Schema[GraphQLContext, Unit] = {
 
     val queries = new GraphQLQueries[GraphQLContext]
       .withQueries(CharacterSchema.schemaFields)
@@ -159,7 +116,7 @@ object GraphQLServer extends App with HttpServer {
 
   router
     .addPreFilter[AccessLoggingFilter]
-    .add[GraphQLRouteAbstractRoute]
+    .add[GraphQLRoute]
 
   startHttpServer()
 }

@@ -11,5 +11,5 @@ libraryDependencies ++= Seq(
   "io.circe"            %% "circe-parser"    % circeV,
   "io.circe"            %% "circe-optics"    % circeV,
   "org.scalatest"       %% "scalatest"       % scalatestV % Test,
-  "ch.qos.logback"      % "logback-classic"  % logbackV % Test
+  "ch.qos.logback"       % "logback-classic" % logbackV   % Test
 )

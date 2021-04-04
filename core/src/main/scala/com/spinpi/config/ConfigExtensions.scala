@@ -13,17 +13,20 @@ object ConfigExtensions {
     }
 
     def durationOrDefault(key: String, default: Duration): Duration = {
-      valueOrDefault({
-        val millis = config.getDuration(key, MILLISECONDS)
-        Duration(millis, MILLISECONDS)
-      }, default)
+      valueOrDefault(
+        {
+          val millis = config.getDuration(key, MILLISECONDS)
+          Duration(millis, MILLISECONDS)
+        },
+        default
+      )
     }
 
   }
 
   def valueOrDefault[T](resolver: => T, default: T): T = {
-    Try(resolver).recover {
-      case _: ConfigException.Missing => default
+    Try(resolver).recover { case _: ConfigException.Missing =>
+      default
     }.get
   }
 }

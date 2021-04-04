@@ -31,11 +31,11 @@ class HttpRouter @Inject() (
   def getHttpHandler(
       overrideRejectionHandler: Option[RejectionHandler]
   ): server.Route = {
-    val rootRoute = concat(routes.map(_.route).toSeq: _*)
+    val rootRoute     = concat(routes.map(_.route).toSeq: _*)
     val allPreFilters = preFilters.foldLeft(Directive.Empty) {
       (directive, filter) => directive & filter.directive
     }
-    val allFilters = filters.foldLeft(Directive.Empty) {
+    val allFilters    = filters.foldLeft(Directive.Empty) {
       (finalDirective, filter) => finalDirective & filter.directive
     }
 
@@ -103,7 +103,7 @@ class HttpRouter @Inject() (
     custom
       .orElse {
         rejectionHandlers.toList match {
-          case Nil => None
+          case Nil      => None
           case handlers =>
             Some(
               handlers
