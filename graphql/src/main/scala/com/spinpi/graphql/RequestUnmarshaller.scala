@@ -23,8 +23,8 @@ object RequestUnmarshaller {
   def unmarshallerContentTypes: Seq[ContentTypeRange] =
     mediaTypes.map(ContentTypeRange.apply)
 
-  implicit final def documentMarshaller(
-      implicit config: QueryRendererConfig = QueryRenderer.Compact
+  implicit final def documentMarshaller(implicit
+      config: QueryRendererConfig = QueryRenderer.Compact
   ): ToEntityMarshaller[Document] =
     Marshaller.oneOf(mediaTypes: _*) { mediaType ⇒
       Marshaller.withFixedContentType(ContentType(mediaType)) { json ⇒
@@ -37,7 +37,7 @@ object RequestUnmarshaller {
       .forContentTypes(unmarshallerContentTypes: _*)
       .map {
         case ByteString.empty ⇒ throw Unmarshaller.NoContentException
-        case data ⇒
+        case data             ⇒
           QueryParser.parse(data.decodeString(Charset.forName("UTF-8"))).get
       }
 

@@ -25,7 +25,7 @@ class ScalaObjectHandler @Inject() (
 
   override def coerce(value: AnyRef): AnyRef = {
     value match {
-      case f: Future[_] =>
+      case f: Future[_]            =>
         new Callable[Any]() {
           def call(): AnyRef = {
             val value =
@@ -54,10 +54,10 @@ class ScalaObjectHandler @Inject() (
           newWriter = iteration.next(newWriter, coerce(next), scopes)
         }
         newWriter
-      case n: Number =>
+      case n: Number            =>
         if (n.intValue() == 0) writer
         else iteration.next(writer, coerce(value), scopes)
-      case _ => super.iterate(iteration, writer, value, scopes)
+      case _                    => super.iterate(iteration, writer, value, scopes)
     }
   }
 
@@ -74,11 +74,11 @@ class ScalaObjectHandler @Inject() (
         } else {
           writer
         }
-      case n: Number =>
+      case n: Number            =>
         if (n.intValue() == 0)
           iteration.next(writer, coerce(value), scopes)
         else writer
-      case _ => super.falsey(iteration, writer, value, scopes)
+      case _                    => super.falsey(iteration, writer, value, scopes)
     }
   }
 

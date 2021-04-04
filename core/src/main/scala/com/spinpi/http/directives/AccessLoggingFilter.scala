@@ -9,7 +9,7 @@ class AccessLoggingFilter extends HttpFilter with LazyLogging {
     extractRequestContext.flatMap { ctx =>
       extractClientIP.flatMap { remoteAddress =>
         val start = System.currentTimeMillis()
-        val ip =
+        val ip    =
           remoteAddress.toOption.map(_.getHostAddress).getOrElse("unknown")
         mapResponse { resp =>
           val elapse = System.currentTimeMillis() - start

@@ -22,7 +22,7 @@ class FileResolver @Inject() (
     )
   }
 
-  private val extMap = new MimetypesFileTypeMap()
+  private val extMap        = new MimetypesFileTypeMap()
   private val localFileMode = localDocRoot.nonEmpty.onTrue {
     logger.info("Local file mode enabled")
   }
@@ -54,7 +54,7 @@ class FileResolver @Inject() (
   private def getClasspathInputStream(path: String): Option[InputStream] = {
     val actualPath = if (!docRoot.isEmpty) s"$actualDocRoot$path" else path
     for {
-      is  <- Option(getClass.getResourceAsStream(actualPath))
+      is <- Option(getClass.getResourceAsStream(actualPath))
       bis = new BufferedInputStream(is)
       if bis.available > 0
     } yield bis

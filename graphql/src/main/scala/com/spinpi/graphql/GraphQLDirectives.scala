@@ -31,7 +31,7 @@ trait GraphQLDirectives {
       variables: Option[String]
   ): Directive2[Document, Json] = {
     query.map(QueryParser.parse(_)) match {
-      case Some(Success(ast)) =>
+      case Some(Success(ast))   =>
         variableParserDirective(variables).flatMap { json =>
           tprovide(Tuple2(ast, json))
         }
@@ -54,9 +54,8 @@ trait GraphQLDirectives {
   def explicitlyAccepts(mediaType: MediaType): Directive0 =
     headerValuePF {
       case Accept(ranges)
-          if ranges.exists(range =>
-            !range.isWildcard && range.matches(mediaType)
-          ) =>
+          if ranges
+            .exists(range => !range.isWildcard && range.matches(mediaType)) =>
         ranges
     }.flatMap(_ => pass)
 }
