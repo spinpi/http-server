@@ -107,7 +107,7 @@ trait GraphQLWithExtractorAbstractRoute[ExtractedData]
     }
   }
 
-  val playGroundRoute: Route = get {
+  lazy val playGroundRoute: Route = get {
     explicitlyAccepts(`text/html`) {
       if (isDisablePlayground) {
         reject(UnsupportedRequestContentTypeRejection(Set.empty, None))
