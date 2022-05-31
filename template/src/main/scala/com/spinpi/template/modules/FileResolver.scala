@@ -1,14 +1,13 @@
 package com.spinpi.template.modules
 
-import java.io.{BufferedInputStream, File, FileInputStream, InputStream}
-
-import com.google.inject.Inject
-import com.google.inject.Singleton
+import com.google.inject.{Inject, Singleton}
+import com.spinpi.conversions.boolean.RichBoolean
 import com.spinpi.template.mustache.MustacheTemplateSettings
 import com.typesafe.scalalogging.LazyLogging
-import javax.activation.MimetypesFileTypeMap
-import com.spinpi.conversions.boolean.RichBoolean
+import jakarta.activation.MimetypesFileTypeMap
 import org.apache.commons.io.FilenameUtils
+
+import java.io.{BufferedInputStream, File, FileInputStream, InputStream}
 
 @Singleton
 class FileResolver @Inject() (
@@ -18,7 +17,7 @@ class FileResolver @Inject() (
   // assertions -- cannot have both doc roots set
   if (localDocRoot.nonEmpty && docRoot.nonEmpty) {
     throw new java.lang.AssertionError(
-      "assertion failed: Cannot set both -local.doc.root and -doc.root flags."
+      "assertion failed: Cannot set both marshaller.mustache.doc.root and marshaller.mustache.local.doc.root config."
     )
   }
 
@@ -52,7 +51,7 @@ class FileResolver @Inject() (
   }
 
   private def getClasspathInputStream(path: String): Option[InputStream] = {
-    val actualPath = if (!docRoot.isEmpty) s"$actualDocRoot$path" else path
+    val actualPath = if (docRoot.nonEmpty) s"$actualDocRoot$path" else path
     for {
       is <- Option(getClass.getResourceAsStream(actualPath))
       bis = new BufferedInputStream(is)
@@ -62,11 +61,10 @@ class FileResolver @Inject() (
 
   private def getLocalFileInputStream(path: String): Option[InputStream] = {
     // try absolute path first, then under local.doc.root
-    val file =
-      if (new File(path).exists)
-        new File(path)
-      else
-        new File(localDocRoot, path)
+    val file = new File(path) match {
+      case f if f.exists() => f
+      case _               => new File(localDocRoot, path)
+    }
 
     if (file.exists)
       Option(new BufferedInputStream(new FileInputStream(file)))
