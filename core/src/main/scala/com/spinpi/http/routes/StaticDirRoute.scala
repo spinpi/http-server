@@ -17,7 +17,7 @@ class StaticDirRoute(
 
 object StaticDirRoute {
   def apply(dir: String): StaticDirRoute = {
-    apply("", dir, "index.html")
+    apply(dir, "index.html")
   }
   def apply(dir: String, index: String): StaticDirRoute = {
     apply("", dir, index)
