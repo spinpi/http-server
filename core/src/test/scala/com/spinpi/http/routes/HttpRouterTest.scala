@@ -7,11 +7,13 @@ import akka.http.scaladsl.server._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import com.google.inject.name.Names
 import com.google.inject.{Guice, Key}
-import com.spinpi.http.directives.AccessLoggingFilter
+import com.spinpi.http.directives.{AccessLoggingFilter, ExceptionMapper}
 import com.spinpi.http.modules.HttpModule
 import com.typesafe.config.Config
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should
+
+import scala.concurrent.Future
 
 class HelloWorldRoute extends HttpRoute {
   override def route: Route = path("hello") {
@@ -59,6 +61,14 @@ class RejectionTestRoutes extends HttpRouteGroup {
     BadRequest
   )
 }
+class ExceptionTestRoute extends HttpRoute {
+  import akka.http.scaladsl.marshalling.GenericMarshallers._
+  override def route: Route = path("exception") {
+    get {
+      complete(Future.failed[String](new Exception("test-error")))
+    }
+  }
+}
 
 class TestRejectionHandler extends RejectionHandler {
   override def apply(rejections: Seq[Rejection]): Option[Route] = {
@@ -86,6 +96,14 @@ class TestRejectionHandler extends RejectionHandler {
   }
 }
 
+class TestExceptionMapper extends ExceptionMapper with Directives {
+  import akka.http.scaladsl.model.StatusCodes._
+  override def handler: PartialFunction[Throwable, Route] = {
+    case e: Exception =>
+      complete(InternalServerError -> s"Error happened: ${e.getMessage}")
+  }
+}
+
 class HttpRouterTest
     extends AnyFlatSpec
     with should.Matchers
@@ -100,6 +118,8 @@ class HttpRouterTest
   httpRouter.add[HelloWorldRoute]
   httpRouter.add[HelloRoute]
   httpRouter.add[RejectionTestRoutes]
+  httpRouter.add[ExceptionTestRoute]
+  httpRouter.addExceptionMapper[TestExceptionMapper]
 
   private val route = httpRouter.getHttpHandler(Some(new TestRejectionHandler))
 
@@ -124,6 +144,13 @@ class HttpRouterTest
     Get("/rejection/bad") ~> route ~> check {
       status.intValue() shouldBe 400
       responseAs[String] shouldBe "bad request"
+    }
+  }
+
+  "Router" should "handle exception" in {
+    Get("/exception") ~> route ~> check {
+      status.intValue() shouldBe 500
+      responseAs[String] shouldBe "Error happened: test-error"
     }
   }
 }
